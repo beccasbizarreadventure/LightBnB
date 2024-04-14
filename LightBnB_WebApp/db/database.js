@@ -135,20 +135,75 @@ return pool
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-const getAllProperties = (options, limit = 10) => {
 
-  return pool
-  .query(`
-    SELECT * 
-    FROM properties
-    LIMIT $1;
-    `, [limit])
-  .then((result) => {
-      return result.rows;
-    })
-  .catch((err) => {
-      console.log(err.message);
-    });
+// SHORT ALL PROPERTIES //
+// const getAllProperties = (options, limit = 10) => {
+
+//   return pool
+//   .query(`
+//     SELECT * 
+//     FROM properties
+//     LIMIT $1;
+//     `, [limit])
+//   .then((result) => {
+//       return result.rows;
+//     })
+  // .catch((err) => {
+  //     console.log(err.message);
+  //   });
+// };
+const getAllProperties = (options, limit = 10) => {
+const queryParams = [];
+
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating)
+  FROM properties
+  JOIN property_reviews ON properties.id = property_id
+  `;
+
+  if (options.city) {
+    queryParams.push(`%${options.city}%`);
+    queryString += `WHERE city LIKE $${queryParams.length} `;
+  }
+
+  if (options.owner_id) {
+    queryParams.push(options.owner_id);
+    queryString += `AND properties.owner_id = $${queryParams.length} `;
+  }
+
+  if (options.minimum_price_per_night) {
+    queryParams.push(options.minimum_price_per_night * 100);
+    queryString += `AND properties.cost_per_night >= $${queryParams.length} `;
+  }
+
+  if (options.maximum_price_per_night) {
+    queryParams.push(options.maximum_price_per_night * 100);
+    queryString += `AND properties.cost_per_night <= $${queryParams.length} `;
+  }
+
+  queryString += `
+  GROUP BY properties.id
+  `;
+
+  if (options.minimum_rating) {
+    queryParams.push(options.minimum_rating);
+    queryString += `HAVING avg(property_reviews.rating) >= $${queryParams.length} `;
+  }
+
+  queryString += `
+  ORDER BY cost_per_night
+  `;
+
+  queryParams.push(limit);
+  queryString += `
+  LIMIT $${queryParams.length};
+  `;
+
+  console.log(queryString, queryParams);
+  return pool.query(queryString, queryParams)
+  .then((res) => {
+    return res.rows
+  });
 };
 // OLD PROMISE CODE, NOT SURE IF I NEED IT //
 //const getAllProperties = function (options, limit = 10) {
