@@ -26,7 +26,6 @@ const getUserWithEmail = function (email) {
     WHERE users.email = $1;`,
     [email])
   .then((results) => {
-      console.log(results.rows[0])
       return results.rows[0];
     })
   .catch((err) => {
@@ -58,7 +57,6 @@ const getUserWithId = function (id) {
     WHERE users.id = $1;`,
     [id])
   .then((results) => {
-      console.log(results.rows[0])
       return results.rows[0];
     })
   .catch((err) => {
@@ -82,7 +80,6 @@ const addUser = function (user) {
     RETURNING *;`,
     [user.name, user.email, user.password])
   .then((results) => {
-      console.log(results.rows[0])
       return results.rows[0];
     })
   .catch((err) => {
@@ -113,12 +110,11 @@ return pool
   JOIN properties ON reservations.property_id = properties.id
   JOIN property_reviews ON property_reviews.property_id = properties.id
   WHERE reservations.guest_id = $1
-  GROUP BY reservations.id, properties.id, title, start_date, cost_per_night
+  GROUP BY reservations.id, properties.id
   ORDER BY start_date 
   LIMIT $2;`,
   [guest_id, limit])
 .then((results) => {
-    console.log(results.rows)
     return results.rows;
   })
 .catch((err) => {
