@@ -159,11 +159,12 @@ const queryParams = [];
   SELECT properties.*, avg(property_reviews.rating)
   FROM properties
   JOIN property_reviews ON properties.id = property_id
+  WHERE 1=1
   `;
 
   if (options.city) {
     queryParams.push(`%${options.city}%`);
-    queryString += `WHERE city LIKE $${queryParams.length} `;
+    queryString += `AND city LIKE $${queryParams.length} `;
   }
 
   if (options.owner_id) {
@@ -190,12 +191,9 @@ const queryParams = [];
     queryString += `HAVING avg(property_reviews.rating) >= $${queryParams.length} `;
   }
 
-  queryString += `
-  ORDER BY cost_per_night
-  `;
-
   queryParams.push(limit);
   queryString += `
+  ORDER BY cost_per_night
   LIMIT $${queryParams.length};
   `;
 
