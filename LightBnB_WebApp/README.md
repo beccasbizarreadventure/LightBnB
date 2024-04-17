@@ -1,5 +1,7 @@
 # LightBnB
 
+* LightBnB is a simple Javascript based webapp that mimics the basic functionality of AirBnB and loads its various pages using SQL queries  
+
 ## Project Structure
 
 ```
@@ -53,3 +55,27 @@
 * `routes` contains the router files which are responsible for any HTTP requests to `/users/something` or `/api/something`. 
 * `styles` contains all of the sass files. 
 * `server.js` is the entry point to the application. This connects the routes to the database.
+
+## How to Use
+
+* Install all dependencies using the `npm install` command
+* Start the app with `npm run local` and view it at `localhost:3000`
+* Login an existing user with an email from the `02_seeds.js` file - the password for all test users is "password"
+* Create a new user with the "Sign Up" page 
+* Once logged in, view past reservations made on the account with the "My Reservations" page
+* View properties listed under the account on the "My Listings" page 
+* Search and filter properties by minimum rating, city, min/max price per night on the "Search" page 
+* Create a new property listing with the "Create Listing" page 
+
+## Dependencies 
+
+* Bcrypt
+* Cookie-Session
+* Express
+* Nodemon
+* Pg
+
+## Known Issues 
+
+* All forms, search queries ect. do not clear after submission and must be cleared manually 
+* Creating a new listing while logged in will not actually populate the new listing to the "My Listings" page
